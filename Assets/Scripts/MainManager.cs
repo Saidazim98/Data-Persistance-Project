@@ -1,8 +1,9 @@
-using System.Collections;
+    using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using System.IO;
 
 public class MainManager : MonoBehaviour
 {
@@ -12,15 +13,13 @@ public class MainManager : MonoBehaviour
 
     public Text ScoreText;
     public GameObject GameOverText;
-    
+    public Text nameScore;
     private bool m_Started = false;
     private int m_Points;
     
     private bool m_GameOver = false;
-
-    
-    // Start is called before the first frame update
-    void Start()
+	// Start is called before the first frame update
+	void Start()
     {
         const float step = 0.6f;
         int perLine = Mathf.FloorToInt(4.0f / step);
@@ -40,6 +39,8 @@ public class MainManager : MonoBehaviour
 
     private void Update()
     {
+        StartMenu.Instance.LoadPlayerInfo();
+        nameScore.text = "Best Score:" + StartMenu.Instance.m_playerName + ":" + StartMenu.Instance.m_bestScore;
         if (!m_Started)
         {
             if (Input.GetKeyDown(KeyCode.Space))
@@ -57,7 +58,7 @@ public class MainManager : MonoBehaviour
         {
             if (Input.GetKeyDown(KeyCode.Space))
             {
-                SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+                SceneManager.LoadScene(1);
             }
         }
     }
@@ -70,7 +71,19 @@ public class MainManager : MonoBehaviour
 
     public void GameOver()
     {
+        if (m_Points> StartMenu.Instance.m_bestScore)
+		{
+            StartMenu.Instance.m_bestScore = m_Points;
+		}
+        StartMenu.Instance.SavePlayerInfo();
         m_GameOver = true;
         GameOverText.SetActive(true);
     }
+    public void BackToMenu()
+	{
+        StartMenu.Instance.SavePlayerInfo();
+        StartMenu.Instance.LoadPlayerInfo();
+        SceneManager.LoadScene(0);
+	}
+    
 }
